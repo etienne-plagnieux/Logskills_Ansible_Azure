@@ -1,0 +1,43 @@
+---
+- hosts: HaProxy
+  connection: local
+#initialisation des variables 
+
+  vars:
+    # variables front end
+    frontend_name: Local_Server
+    bind: 10.0.0.10:443 ssl crt /etc/haproxy/certs/api-logskills.art-dambrine.ovh.pem 
+    mode_frontend: http
+    default_backend: Logskills_API
+    #variables back end
+    backend_name: Logskills_API
+    mode_backend: http
+    balance: static-rr
+    servers:
+     - api1  10.0.0.15:80
+     - api2  10.0.0.20:80
+
+# fin des variables
+
+  remote_user: azureuser
+
+
+  tasks:
+    - name: verif HaProxy a jour et demarre
+      apt: name=haproxy state=latest
+    - name: start haproxy
+      service:
+          name: haproxy
+          state: started
+
+    - name: ecriture du fichier de configuration haproxy.cfg
+      template:
+          src: templates/haproxy/haproxy.cfg
+          dest: /etc/haproxy/haproxy.cfg
+      become: yes
+    - name: restart haproxy
+      service:
+          name: haproxy
+          state: restarted
+      become: yes
+
