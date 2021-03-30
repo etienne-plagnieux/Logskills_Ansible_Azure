@@ -3,21 +3,10 @@
   connection: local
 #initialisation des variables 
 
-  vars:
-    # variables front end
-    frontend_name: Local_Server
-    bind: 10.0.0.10:443 ssl crt /etc/haproxy/certs/api-logskills.art-dambrine.ovh.pem 
-    mode_frontend: http
-    default_backend: Logskills_API
-    #variables back end
-    backend_name: Logskills_API
-    mode_backend: http
-    balance: static-rr
-    servers:
-     - api1  10.0.0.15:80
-     - api2  10.0.0.20:80
+  #VARIABLES 
+  vars_files: 
+   - variables/haproxy/var_haproxy.yaml
 
-# fin des variables
 
   remote_user: azureuser
 
