@@ -9,6 +9,9 @@
   vars_files: 
    - variables/shinken/var_shinken.yaml
 
+
+# FAUT METTRE TASK BORDEL !!
+
 # CONFIGURATION DES FICHIERS 
    - name: Creation des fichiers hostgroup
      file:

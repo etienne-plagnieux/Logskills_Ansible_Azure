@@ -1,0 +1,52 @@
+---
+- hosts: API
+#initialisation des variables 
+  become: yes
+
+  #VARIABLES 
+  vars_files: 
+   - variables/API/var_API.yaml
+
+
+  remote_user: azureuser
+
+
+  tasks:
+
+     # INSTALLATION DE DOCKER
+    - name: Installation de docker et docker-compose
+      apt:
+        name: "{{item}}"
+        state: latest
+      loop:
+        - docker
+        - docker-compose
+
+    # DÉMARRAGE 
+    - name: Démarrage de docker et docker compose
+      service:
+          name: docker
+          state: started
+
+
+    #Git clone du repo
+    - name: Copie de la clé SSH sur le serveur
+      copy:
+          #content: variables/API/private_key
+          src: variables/API/private_key
+          dest: /home/azureuser/private_key
+          mode: 0600
+
+    - name: Git clone du projet LOGSKILLS
+      git:
+          repo: git@gitlab.com:art.dambrine/logskills-api.git
+          version: master
+          dest: /tmp/LOGSKILLS
+          accept_hostkey: yes
+          key_file: /home/azureuser/private_key
+
+    - name: Exécution du script de pré-configuration
+      shell: sh /tmp/LOGSKILLS/before_dev_npm.sh
+
+    - name: Exécution du Docker Compose
+      shell: docker-compose -f /tmp/LOGSKILLS/docker-compose-prod.yml run -d -e DATABASE_HOST={{ DATABASE_HOST }} -e DATABASE_NAME={{DATABASE_NAME }} -e DATABASE_USER={{ DATABASE_USER }} -e DATABASE_PASS={{ DATABASE_PASS }} -p 80:8123 api
