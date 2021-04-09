@@ -11,11 +11,11 @@
 
 
 # FAUT METTRE TASK BORDEL !!
-  tasks: 
+
 # CONFIGURATION DES FICHIERS 
    - name: Creation des fichiers hostgroup
      file:
-      path: "/etc/shinken/hostgroups/{{ item }}.cfg"
+      path: "/etc/shinken/hostgroups/_{{ item }}.cfg"
       owner: shinken
       group: shinken
       mode: 0644
@@ -25,7 +25,7 @@
 
    - name: Configuration des hostgroups
      blockinfile:
-       path: "/etc/shinken/hostgroups/{{ item }}.cfg"
+       path: "/etc/shinken/hostgroups/_{{ item }}.cfg"
        block: |
          define hostgroup {
            hostgroup_name  {{ item }}
@@ -36,32 +36,33 @@
 
 
 # CONFIGURATION DES SERVICES
-   - name: config services    
-     template:
-      src: templates/shinken/services/services.cfg
-      dest: /etc/shinken/services/services.cfg
+
+     #   - name: config services
+     #     template:
+     #  src: templates/shinken/services/services.cfg
+     #  dest: /etc/shinken/services/services.cfg
 
 # CONFIGURATION DES MACHINES
 
    - name: Création des fichiers hosts
      file:
-       path: "/etc/shinken/hosts/{{ item.host_name }}.cfg"
+       path: "/etc/shinken/hosts/_{{ item }}.cfg"
        owner: shinken
        group: shinken
        mode: 0644
        state: touch
-     loop: "{{ hosts_list }}"
+     loop: "{{ hosts }}"
 
 
    - name: Configuration des hosts
      blockinfile:
-       path: "/etc/shinken/hosts/{{ item.host_name }}.cfg"
+       path: "/etc/shinken/hosts/_{{ item }}.cfg"
        block: |
         define host{
            use                 generic-host
            contact_groups      {{ item.contact_groups }}
            host_name           {{ item.host_name }}
            address             {{ item.address }}
-           hostgroup           {{ item.hostgroups }}
+           hostgroup           {{ item.hostgroup }}
         }
-     loop: "{{ hosts_list }}"
+     loop: "{{ hosts }}"
