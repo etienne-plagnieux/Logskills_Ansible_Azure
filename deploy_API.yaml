@@ -46,7 +46,8 @@
           key_file: /home/azureuser/private_key
 
     - name: Exécution du script de pré-configuration
-      shell: sh /tmp/LOGSKILLS/before_dev_npm.sh
+      #shell: sh /tmp/LOGSKILLS/before_dev_npm.sh
+      command: sh /tmp/LOGSKILLS/before_dev_npm.sh
 
     - name: Exécution du Docker Compose
       shell: docker-compose -f /tmp/LOGSKILLS/docker-compose-prod.yml run -d -e DATABASE_HOST={{ DATABASE_HOST }} -e DATABASE_NAME={{DATABASE_NAME }} -e DATABASE_USER={{ DATABASE_USER }} -e DATABASE_PASS={{ DATABASE_PASS }} -p 80:8123 api
